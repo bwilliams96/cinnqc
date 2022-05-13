@@ -62,6 +62,16 @@ class bids:
             self.output.to_csv(self.output_path, index=False)
         else:
             self.output = pd.read_csv(self.output_path)
+            self._add_subjects()
+            self.output.to_csv(self.output_path, index=False)
+            
+    def _add_subjects(self):
+        """
+        Updates the subjects in the output file in case new particicipants have been added
+        """
+        for subj in self.subjects:
+            if subj not in self.output.columns:
+                self.output[subj] = ""
 
         
         

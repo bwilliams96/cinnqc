@@ -7,6 +7,7 @@ import os
 import pandas as pd
 import numpy as np
 from pathlib import Path
+import nibabel as nib
 
 class bids:
     """
@@ -57,13 +58,13 @@ class bids:
         #Check if there is an existing output csv file and create one if not
         self.output_path = os.path.join(self.path, f"derivatives/cinnqc/cinnqc_output.csv")
         if not os.path.isfile(self.output_path):
-            self.output = pd.read_csv(self.info)
+            self.output = pd.read_csv(self.info, index_col='scan_number')
             self.output = self.output.reindex(columns = self.output.columns.tolist() + self.subjects)
-            self.output.to_csv(self.output_path, index=False)
+            self.output.to_csv(self.output_path)
         else:
-            self.output = pd.read_csv(self.output_path)
+            self.output = pd.read_csv(self.output_path, index_col='scan_number')
             self._add_subjects()
-            self.output.to_csv(self.output_path, index=False)
+            self.output.to_csv(self.output_path)
             
     def _add_subjects(self):
         """
@@ -72,6 +73,80 @@ class bids:
         for subj in self.subjects:
             if subj not in self.output.columns:
                 self.output[subj] = ""
+                
+    def _append_output(self, subject, scan_number, note):
+        """
+        adds information about QC issues to a text file for each scan.
 
+        Parameters:
+            subject(string): The subject with the QC issue.
+            scan_number(string): The scan_number with the QC issue.
+            note(string): The note to be added to the text file.
+
+        Returns:
+            A text file (BIDS/derivatives/cinnqc/{subject}/scan_number_{scan_number}_notes.txt) describing the QC issue.
+        """
         
+        output = open(os.path.join(self.path, f"derivatives/cinnqc/{subject}/scan_number_{scan_number}_notes.txt"),"a+")
+        output.write(note + "\n")
+        output.close
+
+    
+    def _check_exists(self, subject, scan_number, filepath=None):
+        """
+        Checks a given scan_number exists for a given subject
+        """
         
+        if filepath is None:
+            if np.isnan(self.output.at[scan_number,'session']):
+                filepath = os.path.join(self.path, subject, f"{self.output.at[scan_number,'bids_subdir']}/{subject}{self.output.at[scan_number,'scan_suffix']}")
+            else:
+                filepath = os.path.join(self.path, subject, f"{self.output.at[scan_number,'session']}/{self.output.at[scan_number,'bids_subdir']}/{subject}_{self.output.at[scan_number,'session']}{self.output.at[scan_number,'scan_suffix']}")
+        
+        if os.path.isfile(filepath):
+            return True
+        else:
+            self._append_output(subject, scan_number, "This file does not exist")
+            return False
+        
+    
+    def check_dims(self, subjects = None, scan_number = None):
+        """
+        checks dimensions of scans for this dataset.
+
+        Parameters:
+            subject(string): The subject with the QC issue.
+            scan_number(string): The scan_number with the QC issue.
+            
+        Returns:
+
+        Example:
+        
+        """
+        if subjects == None:
+            subjects = self.subjects
+        if scan_number == None:
+            scan_number = list(self.output.index.values)
+            
+        for subject in subjects:
+            for scan in scan_number:
+                if np.isnan(self.output.at[scan,'session']):
+                    filepath = os.path.join(self.path, subject, f"{self.output.at[scan,'bids_subdir']}/{subject}{self.output.at[scan,'scan_suffix']}")
+                else:
+                    filepath = os.path.join(self.path, subject, f"{self.output.at[scan,'session']}/{self.output.at[scan,'bids_subdir']}/{subject}_{self.output.at[scan,'session']}{self.output.at[scan,'scan_suffix']}")
+                    
+                if self._check_exists(subject, scan, filepath):
+                    img = nib.load(filepath)
+                    if len(img.shape) == 3:
+                        for idx, dim in zip([0,1,2], ["dim1","dim2","dim3"]):
+                            if self.output.at[scan,dim] != img.shape[idx]:
+                                self._append_output(subject, scan, f"Image was expective to have size {self.output.at[scan,dim]} for {dim}, but returned size {img[idx]}")
+                                self.output.at[scan,subject] = "EXCLUDE" 
+                    elif len(img.shape) == 4:
+                        for idx, dim in zip([0,1,2,3], ["dim1","dim2","dim3","dim4"]):
+                            if self.output.at[scan,dim] != img.shape[idx]:
+                                self._append_output(subject, scan, f"Image was expective to have size {self.output.at[scan,dim]} for {dim}, but returned size {img[idx]}")
+                                self.output.at[scan,subject] = "EXCLUDE" 
+                    else:
+                        self._append_output(subject, scan, f"Image has {len(img.shape)} dimensions")
+                    

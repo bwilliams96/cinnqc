@@ -69,6 +69,9 @@ class bids:
     def _add_subjects(self):
         """
         Updates the subjects in the output file in case new particicipants have been added
+        
+        Returns:
+            an update to self.output with columns for all participants in the BIDS directory.
         """
         for subj in self.subjects:
             if subj not in self.output.columns:
@@ -95,13 +98,18 @@ class bids:
     def _check_exists(self, subject, scan_number, filepath=None):
         """
         Checks a given scan_number exists for a given subject
+        
+        Parameters:
+            subject(string): subject who the scan will be checked for.
+            scan_number(string): scan number that will be checked to see if it exists.
+            filepath(string): expected path to the file (optional).
+            
+        Returns:
+            (Boolean) True if the file exists, false if it doesn't exist.
         """
         
         if filepath is None:
-            if np.isnan(self.output.at[scan_number,'session']):
-                filepath = os.path.join(self.path, subject, f"{self.output.at[scan_number,'bids_subdir']}/{subject}{self.output.at[scan_number,'scan_suffix']}")
-            else:
-                filepath = os.path.join(self.path, subject, f"{self.output.at[scan_number,'session']}/{self.output.at[scan_number,'bids_subdir']}/{subject}_{self.output.at[scan_number,'session']}{self.output.at[scan_number,'scan_suffix']}")
+            filepath = self._get_filepath(subject, scan_number)
         
         if os.path.isfile(filepath):
             return True
@@ -109,6 +117,25 @@ class bids:
             self._append_output(subject, scan_number, "This file does not exist")
             return False
         
+    def _get_filepath(self, subject, scan_number):
+        """
+        gets path to a file for a given subject and scan number. This function is helpful as BIDS datasets with sessions vs those without name files in different ways and have sessions subdirectories.
+        
+        Parameters:
+            subject(string): subject the filepath will be generated for.
+            scan_number(string): the scan number the filepath will be generated for
+            
+        Returns:
+            filepath: path to the file for the given scan_number
+        
+        """
+        if np.isnan(self.output.at[scan_number, 'session']):
+            filepath = os.path.join(self.path, subject, f"{self.output.at[scan_number,'bids_subdir']}/{subject}{self.output.at[scan_number,'scan_suffix']}")
+        else:
+            filepath = os.path.join(self.path, subject, f"{self.output.at[scan_number,'session']}/{self.output.at[scan_number,'bids_subdir']}/{subject}_{self.output.at[scan_number,'session']}{self.output.at[scan_number,'scan_suffix']}")
+            
+        return filepath
+                
     
     def check_dims(self, subjects = None, scan_number = None):
         """
@@ -130,10 +157,7 @@ class bids:
             
         for subject in subjects:
             for scan in scan_number:
-                if np.isnan(self.output.at[scan,'session']):
-                    filepath = os.path.join(self.path, subject, f"{self.output.at[scan,'bids_subdir']}/{subject}{self.output.at[scan,'scan_suffix']}")
-                else:
-                    filepath = os.path.join(self.path, subject, f"{self.output.at[scan,'session']}/{self.output.at[scan,'bids_subdir']}/{subject}_{self.output.at[scan,'session']}{self.output.at[scan,'scan_suffix']}")
+                filepath = self._get_filepath(subject, scan)
                     
                 if self._check_exists(subject, scan, filepath):
                     img = nib.load(filepath)
@@ -149,4 +173,12 @@ class bids:
                                 self.output.at[scan,subject] = "EXCLUDE" 
                     else:
                         self._append_output(subject, scan, f"Image has {len(img.shape)} dimensions")
-                    
+                        
+    # def manual_fail(self, subject, scan_number, note = None):
+    # manually fail qc for a given subject and scan number. note can be used as an option to provide a description for why the scan was failed, else a message "MANUAL FAIL" will be appended
+    
+    # def reset_qc(self, subject, scan_number):
+    # reset qc procedure for a given participant and scan number. this will clear output and reset the value given in the output table
+    
+    # def update_output_info(self, info = None):
+    # updates scan parameter information given in the output pandas dataframe and csv file. info can be used to provide a path to a new file (note, this should then also update self.info), or self.info will be used to update scan parameters. GOT TO THINK ABOUT HOW THIS WOULD WORK IF SCAN NUMBERS CHANGE...

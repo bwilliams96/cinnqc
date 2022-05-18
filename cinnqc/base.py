@@ -60,11 +60,11 @@ class bids:
         if not os.path.isfile(self.output_path):
             self.output = pd.read_csv(self.info, index_col='scan_number')
             self.output = self.output.reindex(columns = self.output.columns.tolist() + self.subjects)
-            self.output.to_csv(self.output_path)
         else:
             self.output = pd.read_csv(self.output_path, index_col='scan_number')
             self._add_subjects()
-            self.output.to_csv(self.output_path)
+            
+        self.save_output()
             
     def _add_subjects(self):
         """
@@ -77,13 +77,15 @@ class bids:
             if subj not in self.output.columns:
                 self.output[subj] = ""
                 
+        self.save_output()
+                
     def _append_output(self, subject, scan_number, note):
         """
         adds information about QC issues to a text file for each scan.
 
         Parameters:
             subject(string): The subject with the QC issue.
-            scan_number(string): The scan_number with the QC issue.
+            scan_number(integer): The scan_number with the QC issue.
             note(string): The note to be added to the text file.
 
         Returns:
@@ -101,7 +103,7 @@ class bids:
         
         Parameters:
             subject(string): subject who the scan will be checked for.
-            scan_number(string): scan number that will be checked to see if it exists.
+            scan_number(integer): scan number that will be checked to see if it exists.
             filepath(string): expected path to the file (optional).
             
         Returns:
@@ -123,7 +125,7 @@ class bids:
         
         Parameters:
             subject(string): subject the filepath will be generated for.
-            scan_number(string): the scan number the filepath will be generated for
+            scan_number(integer): the scan number the filepath will be generated for
             
         Returns:
             filepath: path to the file for the given scan_number
@@ -143,7 +145,7 @@ class bids:
 
         Parameters:
             subject(string): The subject with the QC issue.
-            scan_number(string): The scan_number with the QC issue.
+            scan_number(integer): The scan_number with the QC issue.
             
         Returns:
 
@@ -173,12 +175,95 @@ class bids:
                                 self.output.at[scan,subject] = "EXCLUDE" 
                     else:
                         self._append_output(subject, scan, f"Image has {len(img.shape)} dimensions")
+        
+        self.save_output()
                         
-    # def manual_fail(self, subject, scan_number, note = None):
-    # manually fail qc for a given subject and scan number. note can be used as an option to provide a description for why the scan was failed, else a message "MANUAL FAIL" will be appended
+    def manual_fail(self, subject, scan_number, note = None):
+        """
+        manually fail qc for a given subject and scan number. note can be used as an option to provide a description for why the scan was failed, else a message "MANUAL FAIL - NO NOTE ADDED" will be appended.
+
+        Parameters:
+            subject(string): The subject that will have scan manually failed.
+            scan_number(integer): The scan_number that will be failed.
+
+        Returns:
+
+        Example:
+
+        """
+        if note == None:
+            note = "MANUAL FAIL - NO NOTE ADDED"
+
+        self._append_output(subject, scan_number, note)
+        self.output.at[scan_number, subject] = "EXCLUDE"
+        self.save_output()
     
-    # def reset_qc(self, subject, scan_number):
-    # reset qc procedure for a given participant and scan number. this will clear output and reset the value given in the output table
+    def reset_qc(self, subject, scan_number):
+        """
+        manually resets qc for a given subject and scan number. This will include the txt file describing qc issues and the output dataframe
+
+        Parameters:
+            subject(string): The subject that will have scan manually failed.
+            scan_number(integer): The scan_number that will be failed.
+
+        Returns:
+
+        Example:
+
+        """
+        output = open(os.path.join(self.path, f"derivatives/cinnqc/{subject}/scan_number_{scan_number}_notes.txt"),"w")
+        output.write("")
+        output.close
+        
+        self.output.at[scan_number, subject] = np.nan
+        self.save_output()
     
-    # def update_output_info(self, info = None):
-    # updates scan parameter information given in the output pandas dataframe and csv file. info can be used to provide a path to a new file (note, this should then also update self.info), or self.info will be used to update scan parameters. GOT TO THINK ABOUT HOW THIS WOULD WORK IF SCAN NUMBERS CHANGE...
+    def save_output(self, output_path = None):
+        """
+        saves the output dataframe to a csv file
+
+        Parameters:
+            output_path(string): The path to where the csv file should be saved
+
+        Returns:
+
+        Example:
+
+        """
+        if output_path == None:
+            output_path = self.output_path
+            
+        self.output.to_csv(output_path)
+            
+    def update_output_info(self, info = None):
+        """
+        updates scan parameter information given in the output pandas dataframe and csv file. info can be used to provide a path to a new file, or self.info will be used to update scan parameters. When updating your info file, please DO NOT ALTER PREVIOUSLY ASSIGNED SCAN_NUMBER.
+        
+        Parameters:
+            info(string): Path to the csv file that describes the BIDS directory for QC.
+            
+        Returns:
+        
+        Example:
+        
+        """
+        if info == None:
+            info = self.info
+        
+        tmp_output = pd.read_csv(info, index_col='scan_number')
+        for subj in self.subjects:
+            if subj not in tmp_output.columns:
+                tmp_output[subj] = ""        
+    
+        for idx in self.output.index.values:
+            # check for any scan_number missing from new df that were in the old df and add them
+            if idx not in tmp_output.index.values:
+                test.output.loc[idx] = [""] * len(tmp_output.output.columns)
+            # do the same for missing columns
+            for col in self.output.columns:
+                if col not in tmp_output.columns:
+                    tmp_output[col] = ""
+                tmp_output.loc[idx, col] = self.output.loc[idx, col]
+        
+        self.output = tmp_output
+        self.save_output()

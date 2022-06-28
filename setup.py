@@ -17,7 +17,9 @@ LONG_DESC_TYPE = "text/markdown"
 INSTALL_REQUIRES = [
       'numpy',
       'pandas',
-      'nilearn'
+      'nilearn',
+      'nibabel',
+      'fslpy'
 ]
 
 setup(name=PACKAGE_NAME,

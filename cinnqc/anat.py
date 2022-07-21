@@ -2,7 +2,7 @@ import os
 import numpy as np
 import subprocess
 
-def tissue_seg(dataset, scan_number = None, subjects = None, run_brain_extract = True, be_optional_args = ""):
+def tissue_seg(dataset, scan_number = None, subjects = None, run_brain_extract = True, bet_optional_args = ""):
     
     """
     Performs tissue class segmentation for structural data from the BIDS dataset. 
@@ -13,7 +13,7 @@ def tissue_seg(dataset, scan_number = None, subjects = None, run_brain_extract =
         scan_number(list): Scan numbers for anatomical data to be segmented.
         subjects(list): Subjects to have anatomical data segmented for.
         run_brain_extract(boolean): Run bet to extract brain before performing segmentation.
-        be_optional_args(string): Optional arguments for bet to optimise brain extraction
+        bet_optional_args(string): Optional arguments for bet to optimise brain extraction
         
     Output:
         scan-{scan_number}_tissue-seg_mixeltype.nii.gz voxel-wise mixel value
@@ -41,7 +41,7 @@ def tissue_seg(dataset, scan_number = None, subjects = None, run_brain_extract =
         for scan in scan_number:
             
             if run_brain_extract:
-                brain_extract(dataset, scan_number = scan, subjects = subject, optional_args = be_optional_args)
+                brain_extract(dataset, scan_number = scan, subjects = subject, optional_args = bet_optional_args)
             scan_suffix = dataset.output['scan_suffix'][scan]
             
             

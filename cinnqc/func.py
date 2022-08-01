@@ -133,3 +133,51 @@ def epi_reg(dataset, anat_scan_number, epi_scan_number = None, subjects = None):
             os.remove(f"{outprefix}_fast_wmedge.nii.gz")
             os.remove(f"{outprefix}_fast_wmseg.nii.gz")
             os.rename(f"{outprefix}.mat", f"{outprefix}-func2anat.mat")
+            
+def pyfmriqc(pyfmriqc_path, dataset, anat_scan_number, epi_scan_number = None, subjects = None):
+    
+    """
+    Performs registration functional data to structural data.
+    
+    Parameters:
+        pyfmriqc_path(string): path to the pyfmriqc.py file #NOTE, HOW CAN I MAKE THIS MORE ERGONOMIC? 
+        dataset(object): cinnqc object for the BIDS dataset.
+        anat_scan_number(int): Scan number for the anatomical image assocaited with the functional image to be QC'd.
+        epi_scan_number(list): Scan numbers for functional data to be QC'd.
+        subjects(list): Subjects to have functional data QC'd.
+        
+    Output:
+        Directory in subject's CINNQC derivatives directory with the pyfMRIqc output
+        
+    Example:
+        cinnqc.func.pyfmriqc(/path/to/pyfmriqc.py, dataset, 1, epi_scan_number = [2], subjects = ['sub-001'])
+    """
+    
+    
+    # Get indicies for functional data if no scan numbers are provided
+    if epi_scan_number == None:      
+        epi_scan_number = dataset.output.loc[dataset.output['bids_subdir'].str.contains("func", case=False)].index.tolist()        
+
+    if subjects == None:
+        subjects = dataset.subjects
+        
+    # Iterate over defined subjects and scans
+    for subject in subjects:
+        for scan in epi_scan_number:
+            
+            # set paths to relevant files for pyfMRIqc
+            func_mc = os.path.join(dataset.path, f"derivatives/cinnqc/{subject}/scan-{scan}_motion-corrected.nii.gz")
+            func_mc_par = os.path.join(dataset.path, f"derivatives/cinnqc/{subject}/scan-{scan}_motion-corrected.par")
+            func_mask = os.path.join(dataset.path, f"derivatives/cinnqc/{subject}/scan-{scan}_brain_mask.nii.gz")
+            pyfmriqc_dir = os.path.join(dataset.path, f"derivatives/cinnqc/{subject}/pyfmriqc")
+            
+            if not (os.path.isfile(func_mc)) or (os.path.isfile(func_mc_par)):
+                motion_correct(dataset, scan_number = [scan], subjects = [subject])
+                
+            if not (os.path.isfile(func_mask)):
+                epi_reg(dataset, anat_scan_number, epi_scan_number = [scan], subjects = [subject])
+                
+            if not (os.path.exists(pyfmriqc_dir)):
+                os.mkdir(pyfmriqc_dir)
+                
+            subprocess.run(["python", pyfmriqc_path, "-n", func_mc, "-s", str(25), "-k", func_mask, "-m", func_mc_par, "-o", pyfmriqc_dir], stdout=subprocess.PIPE)

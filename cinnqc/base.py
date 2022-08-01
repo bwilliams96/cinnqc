@@ -44,11 +44,11 @@ class bids:
         self.subjects=[os.path.basename(s) for s in sorted(glob(os.path.join(self.path, 'sub-*'))) if os.path.isdir(s)]
         
         #Get session information for the bids dataset from the info file
-        sess = pd.read_csv(self.info); sess = sess['session'].fillna(np.nan).unique()
-        if np.all(np.isnan(sess)):
+        sess = pd.read_csv(self.info, converters = {'session': lambda x: str(x)}); sess = sess['session'].fillna(np.nan).unique()
+        if sess == ['']:
             self.sess = None
         else:
-            self.sess = sess[~np.isnan(sess)]
+            self.sess = np.delete(sess, np.where(sess ==''))
             
         #Check if output directories exists in derivatives directory for each subject and create one if not
         for subj in self.subjects:

@@ -41,9 +41,7 @@ def tissue_seg(dataset, scan_number = None, subjects = None, run_brain_extract =
         for scan in scan_number:
             
             if run_brain_extract:
-                brain_extract(dataset, scan_number = scan, subjects = subject, optional_args = bet_optional_args)
-            scan_suffix = dataset.output['scan_suffix'][scan]
-            
+                brain_extract(dataset, scan_number = scan, subjects = subject, optional_args = bet_optional_args)            
             
             # Check the type of anatomical image, this is passed to FAST to describe the type of image
             if dataset.output.loc[scan]['scan_type'].upper() == 'T1':
@@ -102,15 +100,9 @@ def brain_extract(dataset, scan_number = None, subjects = None, optional_args = 
     # Iterate over defined subjects and scans
     for subject in subjects:
         for scan in scan_number:
-            
-            scan_suffix = dataset.output['scan_suffix'][scan]            
-            
+                        
             # Check if session is defined for this scan and generate file path
-            if np.isnan(dataset.output['session'][scan]):
-                file = os.path.join(dataset.path, f"{subject}/anat/{subject}{scan_suffix}")
-            else:
-                session = dataset.output['session'][scan]
-                file = os.path.join(dataset.path, f"{subject}/{session}/anat/{subject}_{session}{scan_suffix}")
+            file = dataset._get_filepath(subject, scan)
                 
             outfile = os.path.join(dataset.path, f"derivatives/cinnqc/{subject}/scan-{scan}_bet")
             

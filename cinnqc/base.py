@@ -58,10 +58,10 @@ class bids:
         #Check if there is an existing output csv file and create one if not
         self.output_path = os.path.join(self.path, f"derivatives/cinnqc/cinnqc_output.csv")
         if not os.path.isfile(self.output_path):
-            self.output = pd.read_csv(self.info, index_col='scan_number')
+            self.output = pd.read_csv(self.info, index_col='scan_number', converters = {'session': lambda x: str(x)})
             self.output = self.output.reindex(columns = self.output.columns.tolist() + self.subjects)
         else:
-            self.output = pd.read_csv(self.output_path, index_col='scan_number')
+            self.output = pd.read_csv(self.output_path, index_col='scan_number', converters = {'session': lambda x: str(x)})
             self._add_subjects()
             
         self.save_output()
@@ -131,7 +131,7 @@ class bids:
             filepath: path to the file for the given scan_number
         
         """
-        if np.isnan(self.output.at[scan_number, 'session']):
+        if self.output.at[scan_number, 'session'] == '':
             filepath = os.path.join(self.path, subject, f"{self.output.at[scan_number,'bids_subdir']}/{subject}{self.output.at[scan_number,'scan_suffix']}")
         else:
             filepath = os.path.join(self.path, subject, f"{self.output.at[scan_number,'session']}/{self.output.at[scan_number,'bids_subdir']}/{subject}_{self.output.at[scan_number,'session']}{self.output.at[scan_number,'scan_suffix']}")
@@ -141,7 +141,7 @@ class bids:
     
     def check_dims(self, subjects = None, scan_number = None):
         """
-        checks dimensions of scans for this dataset.
+        checks dimensions of scans for this dataset, rounded to three decimal places.
 
         Parameters:
             subject(string): The subject with the QC issue.
@@ -165,14 +165,14 @@ class bids:
                     img = nib.load(filepath)
                     if len(img.shape) == 3:
                         for idx, dim in zip([0,1,2], ["dim1","dim2","dim3"]):
-                            if self.output.at[scan,dim] != img.shape[idx]:
-                                self._append_output(subject, scan, f"Image was expective to have size {self.output.at[scan,dim]} for {dim}, but returned size {img[idx]}")
-                                self.output.at[scan,subject] = "EXCLUDE" 
+                            if round(self.output.at[scan,dim],3) != round(img.shape[idx],3):
+                                self._append_output(subject, scan, f"Image was expective to have size {self.output.at[scan,dim]} for {dim}, but returned size {img.shape[idx]}")
+                                self.output.at[scan,subject] = 0
                     elif len(img.shape) == 4:
                         for idx, dim in zip([0,1,2,3], ["dim1","dim2","dim3","dim4"]):
-                            if self.output.at[scan,dim] != img.shape[idx]:
-                                self._append_output(subject, scan, f"Image was expective to have size {self.output.at[scan,dim]} for {dim}, but returned size {img[idx]}")
-                                self.output.at[scan,subject] = "EXCLUDE" 
+                            if round(self.output.at[scan,dim],3) != round(img.shape[idx],3):
+                                self._append_output(subject, scan, f"Image was expective to have size {self.output.at[scan,dim]} for {dim}, but returned size {img.shape[idx]}")
+                                self.output.at[scan,subject] = 0
                     else:
                         self._append_output(subject, scan, f"Image has {len(img.shape)} dimensions")
         
@@ -195,7 +195,7 @@ class bids:
             note = "MANUAL FAIL - NO NOTE ADDED"
 
         self._append_output(subject, scan_number, note)
-        self.output.at[scan_number, subject] = "EXCLUDE"
+        self.output.at[scan_number, subject] = 0
         self.save_output()
     
     def reset_qc(self, subject, scan_number):
@@ -250,7 +250,7 @@ class bids:
         if info == None:
             info = self.info
         
-        tmp_output = pd.read_csv(info, index_col='scan_number')
+        tmp_output = pd.read_csv(info, index_col='scan_number', converters = {'session': lambda x: str(x)})
         for subj in self.subjects:
             if subj not in tmp_output.columns:
                 tmp_output[subj] = ""        

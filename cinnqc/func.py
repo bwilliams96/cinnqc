@@ -34,15 +34,9 @@ def motion_correct(dataset, scan_number = None, subjects = None):
     # Iterate over defined subjects and scans
     for subject in subjects:
         for scan in scan_number:
-            
-            scan_suffix = dataset.output['scan_suffix'][scan]
-            
+                      
             # Check if session is defined for this scan and generate file path
-            if np.isnan(dataset.output['session'][scan]):
-                file = os.path.join(dataset.path, f"{subject}/func/{subject}{scan_suffix}")
-            else:
-                session = dataset.output['session'][scan]
-                file = os.path.join(dataset.path, f"{subject}/{session}/func/{subject}_{session}{scan_suffix}")
+            file = dataset._get_filepath(subject, scan)
                 
             outfile = os.path.join(dataset.path, f"derivatives/cinnqc/{subject}/scan-{scan}_motion-corrected")
             outfile_examplefunc = os.path.join(dataset.path, f"derivatives/cinnqc/{subject}/scan-{scan}_example-func")
@@ -84,9 +78,7 @@ def epi_reg(dataset, anat_scan_number, epi_scan_number = None, subjects = None):
     # Iterate over defined subjects and scans
     for subject in subjects:
         for scan in epi_scan_number:
-                
-            scan_suffix = dataset.output['scan_suffix'][scan]
-            
+                            
             # check if bet and tissue segmenation have been performed for the structural image
             wm_seg = os.path.join(dataset.path, f"derivatives/cinnqc/{subject}/scan-{anat_scan_number}_tissue-seg_pve_2.nii.gz")
             bet_img = os.path.join(dataset.path, f"derivatives/cinnqc/{subject}/scan-{anat_scan_number}_bet.nii.gz")
@@ -100,22 +92,14 @@ def epi_reg(dataset, anat_scan_number, epi_scan_number = None, subjects = None):
                 brain_extract(dataset, scan_number = [anat_scan_number], subjects = [subject])
 
             # get path to anatomical image
-                              
-            anat_scan_suffix = dataset.output['scan_suffix'][anat_scan_number]
-            if np.isnan(dataset.output['session'][anat_scan_number]):
-                anat = os.path.join(dataset.path, f"{subject}/anat/{subject}{anat_scan_suffix}")
-            else:
-                session = dataset.output['session'][anat_scan_number]
-                anat = os.path.join(dataset.path, f"{subject}/{session}/anat/{subject}_{session}{anat_scan_suffix}")
+            
+            anat = dataset._get_filepath(subject, anat_scan_number)
                 
             # Check if example func image has been generated and make it if not
             examplefunc = os.path.join(dataset.path, f"derivatives/cinnqc/{subject}/scan-{scan}_example-func.nii.gz")
             if not (os.path.isfile(examplefunc)):
                 if np.isnan(dataset.output['session'][scan]):
-                    file = os.path.join(dataset.path, f"{subject}/func/{subject}{scan_suffix}")
-                else:
-                    session = dataset.output['session'][scan]
-                    file = os.path.join(dataset.path, f"{subject}/{session}/func/{subject}_{session}{scan_suffix}")
+                    file = dataset._get_filepath(subject, scan)
                 
                 subprocess.run(["fslroi", file, examplefunc, "0", "1"], stdout=subprocess.PIPE)
                                   

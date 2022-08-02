@@ -163,15 +163,24 @@ class bids:
                     
                 if self._check_exists(subject, scan, filepath):
                     img = nib.load(filepath)
+                    img_size = img.header.get_zooms()
                     if len(img.shape) == 3:
                         for idx, dim in zip([0,1,2], ["dim1","dim2","dim3"]):
-                            if round(self.output.at[scan,dim],3) != round(img.shape[idx],3):
-                                self._append_output(subject, scan, f"Image was expective to have size {self.output.at[scan,dim]} for {dim}, but returned size {img.shape[idx]}")
+                            if round(self.output.at[scan,dim],2) != round(img.shape[idx],2):
+                                self._append_output(subject, scan, f"Image was expected to have length {self.output.at[scan,dim]} for {dim}, but returned length {img.shape[idx]}")
+                                self.output.at[scan,subject] = 0
+                        for idx, dim in zip([0,1,2], ["x","y","z"]):
+                            if round(self.output.at[scan,dim],2) != round(img_size[idx],2):
+                                self._append_output(subject, scan, f"Image was expected to have voxel size {self.output.at[scan,dim]} for {dim}, but returned voxel size {img_size[idx]}")
                                 self.output.at[scan,subject] = 0
                     elif len(img.shape) == 4:
                         for idx, dim in zip([0,1,2,3], ["dim1","dim2","dim3","dim4"]):
-                            if round(self.output.at[scan,dim],3) != round(img.shape[idx],3):
-                                self._append_output(subject, scan, f"Image was expective to have size {self.output.at[scan,dim]} for {dim}, but returned size {img.shape[idx]}")
+                            if round(self.output.at[scan,dim],2) != round(img.shape[idx],2):
+                                self._append_output(subject, scan, f"Image was expected to have length {self.output.at[scan,dim]} for {dim}, but returned length {img.shape[idx]}")
+                                self.output.at[scan,subject] = 0
+                        for idx, dim in zip([0,1,2,3], ["x","y","z","tr"]):
+                            if round(self.output.at[scan,dim],2) != round(img_size[idx],2):
+                                self._append_output(subject, scan, f"Image was expected to have voxel size {self.output.at[scan,dim]} for {dim}, but returned voxel size {img_size[idx]}")
                                 self.output.at[scan,subject] = 0
                     else:
                         self._append_output(subject, scan, f"Image has {len(img.shape)} dimensions")

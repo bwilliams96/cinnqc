@@ -148,20 +148,21 @@ def pyfmriqc(pyfmriqc_path, dataset, anat_scan_number, epi_scan_number = None, s
     # Iterate over defined subjects and scans
     for subject in subjects:
         for scan in epi_scan_number:
-            
             # set paths to relevant files for pyfMRIqc
             func_mc = os.path.join(dataset.path, f"derivatives/cinnqc/{subject}/scan-{scan}_motion-corrected.nii.gz")
             func_mc_par = os.path.join(dataset.path, f"derivatives/cinnqc/{subject}/scan-{scan}_motion-corrected.par")
             func_mask = os.path.join(dataset.path, f"derivatives/cinnqc/{subject}/scan-{scan}_brain_mask.nii.gz")
             pyfmriqc_dir = os.path.join(dataset.path, f"derivatives/cinnqc/{subject}/pyfmriqc")
-            
-            if not (os.path.isfile(func_mc)) or (os.path.isfile(func_mc_par)):
-                motion_correct(dataset, scan_number = [scan], subjects = [subject])
+                          
+            if dataset._check_exists(subject, scan):
                 
-            if not (os.path.isfile(func_mask)):
-                epi_reg(dataset, anat_scan_number, epi_scan_number = [scan], subjects = [subject])
+                if not (os.path.isfile(func_mc)) or (os.path.isfile(func_mc_par)):
+                    motion_correct(dataset, scan_number = [scan], subjects = [subject])
                 
-            if not (os.path.exists(pyfmriqc_dir)):
-                os.mkdir(pyfmriqc_dir)
+                if not (os.path.isfile(func_mask)):
+                    epi_reg(dataset, anat_scan_number, epi_scan_number = [scan], subjects = [subject])
                 
-            subprocess.run(["python", pyfmriqc_path, "-n", func_mc, "-s", str(25), "-k", func_mask, "-m", func_mc_par, "-o", pyfmriqc_dir], stdout=subprocess.PIPE)
+                if not (os.path.exists(pyfmriqc_dir)):
+                    os.mkdir(pyfmriqc_dir)
+                
+                subprocess.run(["python", pyfmriqc_path, "-n", func_mc, "-s", str(25), "-k", func_mask, "-m", func_mc_par, "-o", pyfmriqc_dir], stdout=subprocess.PIPE)

@@ -164,5 +164,4 @@ def pyfmriqc(pyfmriqc_path, dataset, anat_scan_number, epi_scan_number = None, s
                 
                 if not (os.path.exists(pyfmriqc_dir)):
                     os.mkdir(pyfmriqc_dir)
-                
                 subprocess.run(["python", pyfmriqc_path, "-n", func_mc, "-s", str(25), "-k", func_mask, "-m", func_mc_par, "-o", pyfmriqc_dir], stdout=subprocess.PIPE)

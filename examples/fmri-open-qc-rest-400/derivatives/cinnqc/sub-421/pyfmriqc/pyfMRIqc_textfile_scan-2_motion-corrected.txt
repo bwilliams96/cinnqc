@@ -1,0 +1,39 @@
+SCAN PARAMETERS AND USER INPUT: 
+
+Slice Resolution: 96x96
+Num slices: 47
+Num Volumes: 123
+Voxel Size: 2.667x2.667x3.0
+Total Num Voxels: 433152
+Mask Threshold: None
+Num Mask Voxels: 70344.0
+Percentage of voxel with lowest values for SNR: 25
+  SNR nr of lowest voxel: 108288
+  SNR voxel MEAN: 2.4199120022006957
+  SNR voxel STD: 0.6790801775506863
+  SNR voxel value range: 0.008130081300813009 - 3.4878048780487805
+Mask file: /storage/research/cinn-workspace/cinnqc/cinnqc/examples/fmri-open-qc-rest-400/derivatives/cinnqc/sub-421/scan-2_brain_mask.nii.gz
+
+------------------------------------ 
+
+QC OVERVIEW: 
+
+Mean: 95.51102553308611
+Mean (mask): 588.1211152579796
+SD: 241.74374072637957
+SD (mask): 264.8347689783515
+
+Signal-To-Noise Ratio: 
+Min Slice SNR: 186.58930346769756
+Max Slice SNR: 1078.4728511581131
+ALL Slice SNRs: [186.58930347] [260.19473264] [381.4994044] [463.4071092] [498.25507147] [523.84981805] [532.70149026] [544.03860055] [541.37437144] [547.76264245] [572.05572122] [568.46999664] [565.77950785] [588.25536717] [602.36818878] [616.57087845] [703.59559185] [725.64144771] [747.28734092] [781.11666528] [814.7246674] [857.0309644] [923.03297564] [960.79552002] [993.79339971] [1035.01547348] [1061.71543905] [1073.07667382] [1078.47285116] [1067.23583482] [1049.63652985] [1049.08614772] [1055.94157769] [1053.01459398] [1056.26494646] [1055.64832863] [1034.03218009] [1004.71435172] [984.24323604] [949.83009304] [912.29568923] [880.50578657] [840.88766216] [794.68936482] [683.1392335] [574.88380854] [nan] 
+Mean voxel SNR: 778.141751724563
+
+Movement: 
+Mean absolute Movement: 0.13804468606300815
+Max absolute Movement: 0.9263
+Mean relative Movement: 0.012617928737021859
+Max relative Movement: 0.09209499999999998
+Relative movements (>0.1mm): 0
+Relative movements (>0.5mm): 0
+Relative movements (>voxelsize): 0

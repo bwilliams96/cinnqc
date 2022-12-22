@@ -1,0 +1,293 @@
+<html><head><body style=background-color:#d2e3f4;><title>pyfMRIqc output</title><script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" 
+        integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" 
+        crossorigin="anonymous"></script> <link rel="stylesheet" 
+        href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" 
+        integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+        <style>
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+            width: 400;    
+            background-color: #fff;
+            align="center"
+        }
+        th, td {
+            padding: 15px;
+            text-align: left;
+        }
+        table th {
+            background-color: #eee;
+        }
+        hr {
+            display: block;
+            height: 1px;
+            border: 20;
+            border-top: 1px 
+            solid #333;
+            margin: 1em 0;
+            padding: 0; 
+        }
+        .center {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            width: 90%;
+        }
+        h1 { padding-top: 45px; }
+        h2 { padding-top: 20px; }
+        h3 { padding-top: 25px; }
+        body{font-size:20px;}
+        </style>
+        </head>
+        <body>
+    
+            <nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand" href="#">pyfMRIqc</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="#Input parameter">Input parameter</a></li>
+                <li class="nav-item"><a class="nav-link" href="#Scan parameter">Scan parameter</a></li>
+                <li class="nav-item"><a class="nav-link" href="#QC plots">QC plots</a></li>
+                <li class="nav-item"><a class="nav-link" href="#BINMEAN">BINMEAN</a></li>
+                <li class="nav-item"><a class="nav-link" href="#Mean">Mean</a></li>
+                <li class="nav-item"><a class="nav-link" href="#Masks">Masks</a></li>
+                <li class="nav-item"><a class="nav-link" href="#Variance">Variance</a></li>
+                <li class="nav-item"><a class="nav-link" href="#SNR">SNR</a></li>
+                <li class="nav-item"><a class="nav-link" href="#SUMDIFF">SUMDIFF</a></li>
+                <li class="nav-item"><a class="nav-link" href="#Motion">Motion</a></li>
+                <li class="nav-item"><a class="nav-link" href="#About">About</a></li>
+                </ul>
+            </div>
+            </nav><div id="Input parameter"> <h1>Input parameter</h1>
+        <table>
+            <tr>
+                <th>Functional file</th>
+                <td>scan-2_motion-corrected</td>
+            </tr>
+            <tr>
+                <th>Motion file</th>
+                <td>/storage/research/cinn-workspace/cinnqc/cinnqc/examples/fmri-open-qc-rest-400/derivatives/cinnqc/sub-407/scan-2_motion-corrected.par</td>
+            </tr>
+            <tr>
+                <th>Threshold value</th>
+                <td>None</td>
+            </tr>
+            <tr>
+                <th>Mask file</th>
+                <td>/storage/research/cinn-workspace/cinnqc/cinnqc/examples/fmri-open-qc-rest-400/derivatives/cinnqc/sub-407/scan-2_brain_mask.nii.gz</td>
+            </tr>
+            <tr>
+                <th>SNR threshold</th>
+                <td>25</td>
+            </tr>
+        </table></div><br><hr><br><div id="Scan parameter"> <h1>Scan parameter</h1>
+        <table>
+            <tr>
+                <th>Slice Dimensions</th>
+                <td>96x96</td>
+            </tr>
+            <tr>
+                <th>Number of Slices</th>
+                <td>47</td>
+            </tr>
+            <tr>
+                <th>Number of Volumes</th>
+                <td>123</td>
+            </tr>
+            <tr>
+                <th>Voxel Size</th>
+                <td>2.667x2.667x3.0</td>
+            </tr>
+            <tr>
+                <th>Total Number of Voxels</th>
+                <td>433152</td>
+            </tr>
+        
+        </table></div><br><hr><br><div id="QC plots"> <h1>QC plots</h1><p>The first plot shows the mean of the scaled squared difference (SSD)over all voxel in 
+                    the mask. The second plot shows the mean of the (SSD) for each slice separately. The third plot 
+                    shows: 1) Normalised average of the demeaned voxel intensity of each volume. 2) Normalised 
+                    variance of the SSD over all voxels in the mask. 3) (only if motion file was specified as input)
+                    : Normalized sum of relative movement (sum of all relative motion translations and rotations.).
+                    See <a href = "https://drmichaellindner.github.io/pyfMRIqc/#qc-plots">here</a>
+                    for guidelines about how to use these plots.</p><img src ="pyfMRIqc_PLOTS_scan-2_motion-corrected.png" alt="pyfMRIqc plots" class="center"></div><br><hr><br><div id="BINMEAN"> <h1>Mean voxel time course of bins with equal number of voxels</h1><p>Mean voxel time course of bins.  
+                        See <a href = "https://drmichaellindner.github.io/pyfMRIqc/#mean-voxel-time-course-of-bins-with-equal-number-of-voxels">here</a>
+                        for guidelines about how to use this plot.</p><img src="pyfMRIqc_BINMEAN_scan-2_motion-corrected.png" alt="Mean signal from functional image" class="center"></div><br><hr><br><div id="Mean"> <h1>Mean voxel intensity</h1><img src="pyfMRIqc_MEAN_scan-2_motion-corrected.png" alt="Mean signal from functional image" class="center"><h2> Mean voxel intensity summary</h2>
+        <table style="width:50%">
+            <tr>
+                <th>Mean Signal (unmasked)</th>
+                <td>94.50377719036499</td>
+            </tr>
+            <tr>
+                <th>Mean Signal SD (unmasked)</th>
+                <td>254.14634492389615</td>
+            </tr>
+            <tr>
+                <th>Mean Signal (masked)</th>
+                <td>642.1299507052923</td>
+            </tr>
+            <tr>
+                <th>Mean Signal SD (masked)</th>
+                <td>295.3447019694928</td>
+            </tr>
+        </table></div><br><hr><br><div id="Masks"> <h1 class="sub-report-title">Masks</h1><p>Voxels included in the masks and used for the quality check are highlighted in blue,
+                voxels used for SNR calculation are highlighted in green. 
+                See <a href = "https://drmichaellindner.github.io/pyfMRIqc/#masks">here</a>
+                for guidelines about how to use this plot.</p><img src="pyfMRIqc_MASK_scan-2_motion-corrected.png" alt="mask image" class="center"><p></p><h2> Mask summary</h2>
+        <table style="width:50%">
+            <tr>
+                <th>Total Number of Voxels</th>
+                <td>433152</td>
+            </tr>
+            <tr>
+                <th>Mask Threshold Value</th>
+                <td>None</td>
+            </tr>
+            <tr>
+                <th>Number of Masked Voxels</th>
+                <td>63748.0</td>
+            </tr>
+        </table></div><br><hr><br><div id="Variance"> <h1>Variance of voxel intensity</h1><p>For better visualization the image is thresholded at max 1015.0 to minimize the scaling effect of large outliers. See <a href = "https://drmichaellindner.github.io/pyfMRIqc/#variance-of-voxel-intensity">
+                here</a> for guidelines about how to use this plot.</p><img src=pyfMRIqc_VARIANCE_scan-2_motion-corrected_thr1015.0.png alt="Signal variance from functional image" class="center"></div><br><hr><br><div id="SNR"> <h1>Signal to noise ratio (SNR)</h1><p>See <a href = "https://drmichaellindner.github.io/pyfMRIqc/#signal-to-noise-ratio">
+                       here</a> for more info.</p><p></p>
+        <table style="width:70%">
+            <tr>
+                <th>Mask Threshold Value</th>
+                <td>None</td>
+            </tr>
+            <tr>
+                <th>Number of Masked Voxels</th>
+                <td>63748.0</td>
+            </tr>
+            <tr>
+                <th>SNR Threshold</th>
+                <td>25</td>
+            </tr>
+            <tr>
+                <th>Number of voxels below threshold for SNR</th>
+                <td>108288</td>
+            </tr>
+            <tr>
+                <th>Mean values of voxel for SNR</th>
+                <td>2.1129744799775128</td>
+            </tr>
+            <tr>
+                <th>STD of voxel for SNR</th>
+                <td>0.4896933044508607</td>
+            </tr>
+            <tr>
+                <th>Value range of voxel for SNR</th>
+                <td>0.008130081300813009 - 2.6747967479674797</td>
+            </tr>
+                <tr>
+                <th>Mean voxel SNR</th>
+                <td>1176.7341856325513</td>
+            </tr>
+            <tr>
+                <th>Min Slice SNR</th>
+                <td>73.49335481713128</td>
+            </tr>
+            <tr>
+                <th>Max Slice SNR</th>
+                <td>1599.9067239918347</td>
+            </tr>
+            <tr>
+                <th>ALL Slice SNR</th>
+                <td>73.49335482
+214.41499285
+430.3666768
+591.93514197
+688.96466694
+760.37282173
+839.97261351
+840.50529876
+836.14075444
+791.26075234
+824.90296291
+872.6519428
+870.59917348
+839.69698606
+940.52556412
+1023.08925054
+1079.29643293
+1140.42102288
+1179.93781766
+1258.79010468
+1359.78936938
+1414.19637309
+1460.10358607
+1521.487064
+1551.15227126
+1561.10399036
+1538.47910479
+1542.66111619
+1523.88931788
+1533.41414641
+1553.00707341
+1577.88228044
+1599.90672399
+1586.24005578
+1575.47018521
+1547.94731628
+1514.88779345
+1507.47709256
+1507.89487539
+1445.43405565
+1415.05084313
+1352.57852308
+1312.17849218
+nan
+nan
+nan
+nan
+</td>
+            </tr>
+        </table></div><br><hr><br><div id="SUMDIFF"> <h1 class="sub-report-title">Sum of squared scaled difference over time</h1><p>For better visualization the image is Mean squared scaled difference (SSD) is thresholded at max: 34723.0.This image shows the sum of the difference in voxel intensity between adjacent volumes for each 
+                    voxel across all adjacent volumes acquired during scanning. See <a href = 
+                    "https://drmichaellindner.github.io/pyfMRIqc/#sum-of-squared-scaled-differences-over-time">
+                    here</a> for more info.</p><img src="pyfMRIqc_SUM_SQUARED_DIFF_SCALED_scan-2_motion-corrected.png" alt="sum of squared scaled difference image" class="center"></div><br><hr><br><div id="Motion"> <h1>Motion parameter summary</h1>
+                <table style="width:70%">
+                    <tr>
+                        <th>Mean absolute Movement</th>
+                        <td>0.10456257672881436</td>
+                    </tr>
+                    <tr>
+                        <th>Max absolute Movement</th>
+                        <td>0.64062</td>
+                    </tr>
+                    <tr>
+                        <th>Mean relative Movement</th>
+                        <td>0.016163866140887977</td>
+                    </tr>
+                    <tr>
+                        <th>Max relative Movement</th>
+                        <td>0.1475014</td>
+                    </tr>
+                    <tr>
+                        <th>Relative movements (>0.1mm)</th>
+                        <td>6</td>
+                    </tr>
+                    <tr>
+                        <th><font color=#ffa500>Relative movements (>0.5mm)</font></th>
+                        <td><font color=#ffa500>0</font></td>
+                    </tr>
+                    <tr>
+                        <th><font color="red">Relative movements (>voxelsize)</font></th>
+                        <td><font color="red">0</font></td>
+                    </tr>
+                </table></div><br><hr><br><div id="About"> <h1>About</h1>
+    <br>
+    <ul>
+		<li>Date of quality check: 2022/08/15 15:17:37</li>
+		<li>pyfMRIqc version: 1.1</li>
+        <li>pyfMRIqc code: 
+        <a href="https://github.com/DrMichaelLindner/pyfMRIqc">https://github.com/DrMichaelLindner/pyfMRIqc</a></li>
+    </ul>
+    <br>
+    <p><font size="4"><b>Thank you for using pyfMRIqc.py!</b></font></p>
+    <p><b>AUTHORS:</b><br>
+        Michael Lindner and Brendan Williams<br>
+        University of Reading, 2019<br>
+        School of Psychology and Clinical Language Sciences<br>
+        Center for Integrative Neuroscience and Neurodynamics
+        </p>
+    </div><br><hr><br></body></html>

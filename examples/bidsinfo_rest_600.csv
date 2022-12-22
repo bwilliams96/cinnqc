@@ -1,0 +1,4 @@
+scan_number,session,bids_subdir,scan_suffix,scan_type,dim1,dim2,dim3,dim4,x,y,z,tr,visual_onset_suffix,motor_onset_suffix
+1,ses-01,anat,_run-01_T1w.nii.gz,T1,256,256,256,1,1,1,1,,,
+2,ses-01,func,_task-rest_run-01_bold.nii.gz,REST,64,64,32,480,4,4,4,2.5,,
+3,ses-01,func,_task-rest_run-02_bold.nii.gz,REST,64,64,32,130,4,4,4,2.5,,

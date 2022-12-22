@@ -1,0 +1,2 @@
+Image was expective to have voxel size 2.667 for x, but returned voxel size 2.6670000553131104
+Image was expective to have voxel size 2.667 for y, but returned voxel size 2.6670000553131104

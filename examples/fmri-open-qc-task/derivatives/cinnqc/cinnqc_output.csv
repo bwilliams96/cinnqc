@@ -1,0 +1,3 @@
+scan_number,session,bids_subdir,scan_suffix,scan_type,dim1,dim2,dim3,dim4,x,y,z,tr,visual_onset_suffix,motor_onset_suffix,sub-001,sub-002,sub-003,sub-004,sub-005,sub-006,sub-007,sub-008,sub-009,sub-010,sub-011,sub-012,sub-013,sub-014,sub-015,sub-016,sub-017,sub-018,sub-019,sub-020,sub-021,sub-022,sub-023,sub-024,sub-025,sub-026,sub-027,sub-028,sub-029,sub-030
+1,,anat,_T1w.nii.gz,T1,176,256,256,1,1,1,1,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+2,,func,_task-pamenc_bold.nii.gz,TASK,64,64,34,242,3,3,4,2.0,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
